@@ -1,26 +1,24 @@
 import { useEffect, useState } from 'react';
 import * as React from 'react';
+import { Observable } from 'windowed-observable';
 
-const {worky} = window;
+const observable = new Observable('message');
 
-export const MF1Page: React.FC = () => {
-    const [messages, setMessages] = useState([]);
+export const MF1Page: React.FC= () =>{
+    const [messages, setMessages] = React.useState([]);
   
     const handleNewMessage = (message) => {
-      if (message.data.type) {
-        return;
-      }
   
       setMessages((currentMessages) => currentMessages.concat(message.data));
     };
   
-    useEffect(() => {  
-      worky.addEventListener('message', handleNewMessage);
+    React.useEffect(() => {  
+      observable.subscribe(handleNewMessage);
   
       return () => {
-        worky.removeEventListener('message', handleNewMessage)
+        observable.unsubscribe(handleNewMessage);
       }
-    }, [handleNewMessage]);
+    }, [messages]);
   
   
     return (
@@ -31,7 +29,11 @@ export const MF1Page: React.FC = () => {
           {messages.map((something, i) => <p key={something + i}>{something}</p>)}
         </div>
       </div>
+     
     );
+      
   }
+
+  
 
   

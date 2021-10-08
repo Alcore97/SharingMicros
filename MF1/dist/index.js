@@ -554,6 +554,148 @@ module.exports = function (list, options) {
 
 /***/ }),
 
+/***/ "./node_modules/windowed-observable/dist/windowed-observable.esm.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/windowed-observable/dist/windowed-observable.esm.js ***!
+  \**************************************************************************/
+/*! exports provided: EVENTS, OBSERVERS, Observable, SHARED */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EVENTS", function() { return EVENTS; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "OBSERVERS", function() { return OBSERVERS; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Observable", function() { return Observable; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SHARED", function() { return SHARED; });
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  return Constructor;
+}
+
+var EVENTS = '__events__';
+var SHARED = '__shared__';
+var OBSERVERS = '__observers__';
+var Observable = /*#__PURE__*/function () {
+  function Observable(namespace) {
+    this.dispatch = this.publish;
+    Observable.initialize();
+    this.namespace = namespace;
+  }
+
+  Observable.initialize = function initialize() {
+    if (!window[SHARED]) {
+      var _window$SHARED;
+
+      window[SHARED] = (_window$SHARED = {}, _window$SHARED[EVENTS] = {}, _window$SHARED[OBSERVERS] = {}, _window$SHARED);
+    }
+
+    if (!window[SHARED][EVENTS]) {
+      window[SHARED][EVENTS] = {};
+    }
+
+    if (!window[SHARED][OBSERVERS]) {
+      window[SHARED][OBSERVERS] = {};
+    }
+  };
+
+  var _proto = Observable.prototype;
+
+  _proto.publish = function publish(data) {
+    this.observers.forEach(function (observer) {
+      return observer(data);
+    });
+    this.events.push(data);
+  };
+
+  _proto.subscribe = function subscribe(observer, options) {
+    if (options === void 0) {
+      options = {
+        latest: false,
+        every: false
+      };
+    }
+
+    var _options = options,
+        every = _options.every,
+        latest = _options.latest;
+    var events = this.events;
+    var hasOptions = latest || every;
+
+    if (hasOptions && events.length > 0) {
+      if (latest) {
+        var lastEvent = events[events.length - 1];
+        observer(lastEvent);
+      }
+
+      if (every) {
+        observer(events);
+      }
+    }
+
+    this.observers = this.observers.concat(observer);
+  };
+
+  _proto.unsubscribe = function unsubscribe(observer) {
+    this.observers = this.observers.filter(function (obs) {
+      return obs !== observer;
+    });
+  };
+
+  _proto.clear = function clear() {
+    var _this$observers;
+
+    (_this$observers = this.observers) == null ? void 0 : _this$observers.forEach(function (observer) {
+      return observer(undefined);
+    });
+    this.events = [];
+    this.observers = [];
+  };
+
+  _createClass(Observable, [{
+    key: "events",
+    get: function get() {
+      return window[SHARED][EVENTS][this._namespace];
+    },
+    set: function set(newEvents) {
+      window[SHARED][EVENTS][this._namespace] = newEvents;
+    }
+  }, {
+    key: "observers",
+    get: function get() {
+      return window[SHARED][OBSERVERS][this._namespace];
+    },
+    set: function set(newObservers) {
+      window[SHARED][OBSERVERS][this._namespace] = newObservers;
+    }
+  }, {
+    key: "namespace",
+    set: function set(namespace) {
+      this._namespace = namespace;
+      if (!this.events) this.events = [];
+      if (!this.observers) this.observers = [];
+    }
+  }]);
+
+  return Observable;
+}();
+
+
+//# sourceMappingURL=windowed-observable.esm.js.map
+
+
+/***/ }),
+
 /***/ "./src/App.css":
 /*!*********************!*\
   !*** ./src/App.css ***!
@@ -602,7 +744,7 @@ __webpack_require__.r(__webpack_exports__);
 var LinkToMF1 = function LinkToMF1() {
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react_router_dom__WEBPACK_IMPORTED_MODULE_1__["Link"], {
     to: "/MF1Page"
-  }, "My MF1");
+  }, "My MF1 & MF2");
 };
 
 /***/ }),
@@ -619,6 +761,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MF1Page", function() { return MF1Page; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var windowed_observable__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! windowed-observable */ "./node_modules/windowed-observable/dist/windowed-observable.esm.js");
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -633,30 +776,25 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
-var _window = window,
-    worky = _window.worky;
+var observable = new windowed_observable__WEBPACK_IMPORTED_MODULE_1__["Observable"]('message');
 var MF1Page = function MF1Page() {
-  var _useState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])([]),
-      _useState2 = _slicedToArray(_useState, 2),
-      messages = _useState2[0],
-      setMessages = _useState2[1];
+  var _React$useState = react__WEBPACK_IMPORTED_MODULE_0__["useState"]([]),
+      _React$useState2 = _slicedToArray(_React$useState, 2),
+      messages = _React$useState2[0],
+      setMessages = _React$useState2[1];
 
   var handleNewMessage = function handleNewMessage(message) {
-    if (message.data.type) {
-      return;
-    }
-
     setMessages(function (currentMessages) {
       return currentMessages.concat(message.data);
     });
   };
 
-  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
-    worky.addEventListener('message', handleNewMessage);
+  react__WEBPACK_IMPORTED_MODULE_0__["useEffect"](function () {
+    observable.subscribe(handleNewMessage);
     return function () {
-      worky.removeEventListener('message', handleNewMessage);
+      observable.unsubscribe(handleNewMessage);
     };
-  }, [handleNewMessage]);
+  }, [messages]);
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", {
     className: "MF"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("h3", null, "Microfrontend 1\uFE0F\u20E3"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("p", null, "New messages will be displayed below \uD83D\uDC47"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", {
@@ -688,6 +826,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function setup(app) {
+  var value = app.getData('MF2Data');
+  console.log("The value is: \"".concat(value, "\"!"));
   app.registerPage('/MF1Page', _MF1Page__WEBPACK_IMPORTED_MODULE_1__["MF1Page"]);
   app.registerMenu('/LinkToMF1', _LinkToMF1__WEBPACK_IMPORTED_MODULE_2__["LinkToMF1"]);
 }
@@ -701,7 +841,7 @@ function setup(app) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Everis\MicroFrontEnds\Sharing Microfrontends\Web Worker\MF1\node_modules\piral-cli-webpack\lib\set-path */"./node_modules/piral-cli-webpack/lib/set-path.js");
+__webpack_require__(/*! C:\Everis\MicroFrontEnds\Sharing Microfrontends\Web Worker Piral\MF1\node_modules\piral-cli-webpack\lib\set-path */"./node_modules/piral-cli-webpack/lib/set-path.js");
 module.exports = __webpack_require__(/*! ./src\index.tsx */"./src/index.tsx");
 
 

@@ -9,7 +9,10 @@ import * as ReactDom from 'react-dom'
 
 export function setup(app: PiletApi) {
   app.registerPage('/MF2Page', MF2Page);
-  app.registerMenu('/LinkToMF2', LinkToMF2)
+  app.registerMenu('/LinkToMF2', LinkToMF2);
+  app.setData('MF2Data', 32);
+  const value = app.getData('MF2Data');
+  console.log(`THe value is:'${value}' `)
 }
 
 

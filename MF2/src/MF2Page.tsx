@@ -1,6 +1,9 @@
+import { PiletApi } from 'my-app';
 import * as React from 'react';
+//import say from "./worker"
+import { Observable } from 'windowed-observable';
 
-const { worky } = window;
+const observable = new Observable('message')
 
 export const MF2Page: React.FC = () => {
   const handleSubmit = (e) => {
@@ -9,7 +12,7 @@ export const MF2Page: React.FC = () => {
     const { target: form } = e;
     const input = form?.elements?.something;
     
-    worky.say(input.value);
+    observable.publish(input.value);
     form.reset();
   }
 

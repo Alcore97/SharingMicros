@@ -1,11 +1,12 @@
 {
   "name": "MF2",
-  "version": "1.0.0",
+  "version": "1.0.6",
   "description": "",
   "keywords": [
     "pilet"
   ],
   "dependencies": {
+    "windowed-observable": "^0.4.3",
     "worky": "*"
   },
   "devDependencies": {
